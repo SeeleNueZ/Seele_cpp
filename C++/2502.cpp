@@ -5,32 +5,30 @@ using IntPair = pair<int,int>;
 class Allocator {
     public:
         Allocator(int n) {
-            map<int,vector<IntPair>> cache;
             vector<IntPair> a;
+            a.push_back(make_pair(0,n-1));
+            cache_list.insert(make_pair(0,a));
         }
         
         int allocate(int size, int mID) {
+            if (cache_list.contains(mID)){
+                cout<<"------"<<endl;
+                cout<<(cache_list[mID].begin()->first)<<endl;
+            }
             
+            return 0;
         }
         
         int freeMemory(int mID) {
-            
+            return 0;
         }
+    private:
+        map<int,vector<IntPair>> cache_list;
     };
     
 
 int main(){
-    map<int, vector<IntPair>> list;
-    vector<IntPair> a;
-    a.push_back(make_pair(0,10));
-    list.insert(make_pair(0,a));
-    auto it = list.find(1);
-    if (it != list.end()) {
-        for (const auto& pair : it->second) {
-            cout << "(" << pair.first << ", " << pair.second << ") ";
-        }
-        cout << endl;
-    } else {
-        cout << "键不存在" << endl;
-    }
+    Allocator* obj = new Allocator(100);
+    int param_1 = obj->allocate(10,0);
+    int param_2 = obj->freeMemory(0);
 }
