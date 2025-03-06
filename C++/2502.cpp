@@ -11,12 +11,38 @@ class Allocator {
         }
         
         int allocate(int size, int mID) {
+            int x =0 ;
+            int start=0;
+            for (auto it =cache_list[0].begin();it!=cache_list[0].end();++it){
+                if (it->second-it->first+1>size)
+                {
+                    x=1;
+                    it->second=it->second-size;
+                    start=it->first;
+
+                }
+                else if(it->second-it->first+1==size)
+                {
+                    x=2;
+                    cache_list[0].erase(it);
+                    start=it->first;
+                } 
+            }
+            if(x==0){
+                return -1;
+            }
+
+
             if (cache_list.contains(mID)){
-                cout<<"------"<<endl;
-                cout<<(cache_list[mID].begin()->first)<<endl;
+                cache_list[mID].push_back(make_pair(start,start+size-1));
+            }
+            else{
+                vector<IntPair> a;
+                a.push_back(make_pair(start,start+size-1));
+                cache_list.insert(make_pair(mID,a));
             }
             
-            return 0;
+            return start;
         }
         
         int freeMemory(int mID) {
@@ -29,6 +55,6 @@ class Allocator {
 
 int main(){
     Allocator* obj = new Allocator(100);
-    int param_1 = obj->allocate(10,0);
+    cout<<obj->allocate(10,1)<<endl;
     int param_2 = obj->freeMemory(0);
 }
