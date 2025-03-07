@@ -31,8 +31,7 @@ class Allocator {
             if(x==0){
                 return -1;
             }
-
-
+            //加入东西
             if (cache_list.contains(mID)){
                 cache_list[mID].push_back(make_pair(start,start+size-1));
             }
@@ -44,9 +43,19 @@ class Allocator {
             
             return start;
         }
-        
         int freeMemory(int mID) {
-            return 0;
+            if (cache_list.contains(mID)){
+                int size =0;
+                for (auto it =cache_list[mID].begin();it!=cache_list[mID].end();++it){
+                    size=size+it->second-it->first+1;
+                    cache_list[0].push_back(*it);
+                }
+                return size;
+                
+            }
+            else{
+                return 0;
+            }
         }
     private:
         map<int,vector<IntPair>> cache_list;
@@ -56,5 +65,7 @@ class Allocator {
 int main(){
     Allocator* obj = new Allocator(100);
     cout<<obj->allocate(10,1)<<endl;
-    int param_2 = obj->freeMemory(0);
+    cout<<obj->allocate(5,1)<<endl;
+    cout<<obj->allocate(10,1)<<endl;
+    cout<<obj->freeMemory(1)<<endl;
 }
