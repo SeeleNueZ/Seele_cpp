@@ -44,21 +44,32 @@ class Allocator {
             return start;
         }
         int freeMemory(int mID) {
+            int size =0;
             if (cache_list.contains(mID)){
-                int size =0;
                 for (auto it =cache_list[mID].begin();it!=cache_list[mID].end();++it){
                     size=size+it->second-it->first+1;
                     cache_list[0].push_back(*it);
                 }
-                return size;
                 
             }
             else{
-                return 0;
             }
+            sort(cache_list[0].begin(), cache_list[0].end());
+            if(cache_list.size()>=2){
+                for (auto it =cache_list[mID].begin() ;it!=cache_list[mID].end()-1;++it){
+                    IntPair cur= *it;
+                    IntPair next = *(it+1);
+                    if (it->second ==(it+1)->first){
+                        it->second=(it+1)->second;
+                        cache_list[mID].erase(it+1);
+                    }
+                }
+            }
+            return size;
         }
     private:
         map<int,vector<IntPair>> cache_list;
+       
     };
     
 
