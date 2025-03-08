@@ -13,22 +13,29 @@ class Allocator {
         int allocate(int size, int mID) {
             int x =0 ;
             int start=0;
+            if(cache_list[0].empty())
+            {
+                return -1;
+            }
             for (auto it =cache_list[0].begin();it!=cache_list[0].end();++it){
                 if (it->second-it->first+1>size)
                 {
                     x=1;
-                    it->second=it->second-size;
                     start=it->first;
-
+                    it->first=it->first+size;
+                    break;
+                    
                 }
                 else if(it->second-it->first+1==size)
                 {
                     x=2;
-                    cache_list[0].erase(it);
                     start=it->first;
+                    it = cache_list[0].erase(it);
+                    break;
                 } 
             }
-            if(x==0){
+            if(x==0)
+            {
                 return -1;
             }
             //加入东西
@@ -45,25 +52,35 @@ class Allocator {
         }
         int freeMemory(int mID) {
             int size =0;
-            if (cache_list.contains(mID)){
+            if (cache_list.contains(mID))
+            {
                 for (auto it =cache_list[mID].begin();it!=cache_list[mID].end();++it){
                     size=size+it->second-it->first+1;
                     cache_list[0].push_back(*it);
                 }
+                cache_list.erase(mID);
+                sort(cache_list[0].begin(), cache_list[0].end());
+                if(cache_list[0].size()>=2)
+                {
+                    //cout<<"clean"<<endl;
+                    auto cur = cache_list[0].begin();
+                    while(cur !=cache_list[0].end() && cur+1!=cache_list[0].end())
+                    {
+                        if (cur->second +1==(cur+1)->first){
+                            cout<<cur->first<<" "<<cur->second<<" "<<(cur+1)->first<<" "<<(cur+1)->second<<endl;
+                            (cur+1)->first=cur->first;
+                            cur=cache_list[0].erase(cur);
+                        }
+                        else
+                        {
+                            ++cur;
+                        }
+                    }
+                }
+                //cout<<cache_list[0].size()<<endl;
                 
             }
             else{
-            }
-            sort(cache_list[0].begin(), cache_list[0].end());
-            if(cache_list.size()>=2){
-                for (auto it =cache_list[mID].begin() ;it!=cache_list[mID].end()-1;++it){
-                    IntPair cur= *it;
-                    IntPair next = *(it+1);
-                    if (it->second ==(it+1)->first){
-                        it->second=(it+1)->second;
-                        cache_list[mID].erase(it+1);
-                    }
-                }
             }
             return size;
         }
@@ -74,9 +91,28 @@ class Allocator {
     
 
 int main(){
-    Allocator* obj = new Allocator(100);
-    cout<<obj->allocate(10,1)<<endl;
-    cout<<obj->allocate(5,1)<<endl;
-    cout<<obj->allocate(10,1)<<endl;
-    cout<<obj->freeMemory(1)<<endl;
+    Allocator* obj = new Allocator(50);
+   
+    cout<<obj->allocate(12,6)<<endl;
+    cout<<obj->allocate(28,16)<<endl;
+    cout<<obj->allocate(17,23)<<endl;
+    cout<<obj->allocate(50,23)<<endl;
+    cout<<obj->freeMemory(6)<<endl; 
+    cout<<obj->freeMemory(10)<<endl;
+    cout<<obj->freeMemory(10)<<endl;
+    cout<<obj->allocate(16,8)<<endl;
+    cout<<obj->allocate(16,8)<<endl;
+    cout<<obj->allocate(17,41)<<endl;
+    cout<<obj->allocate(44,27)<<endl;
+    cout<<obj->allocate(12,45)<<endl;
+    cout<<obj->freeMemory(33)<<endl;
+    cout<<obj->freeMemory(8)<<endl;
+    cout<<obj->freeMemory(16)<<endl;
+    cout<<obj->freeMemory(23)<<endl;
+    cout<<obj->freeMemory(23)<<endl;
+    cout<<obj->freeMemory(23)<<endl;
+    cout<<obj->freeMemory(29)<<endl;
+    cout<<obj->allocate(38,32)<<endl;
+    cout<<obj->freeMemory(29)<<endl;
+    cout<<obj->freeMemory(6)<<endl;
 }
