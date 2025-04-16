@@ -1,26 +1,36 @@
-class Solution {
+#include <bits/stdc++.h>
+using namespace std;
     // 简单来说先说明几个思路问题，一个数组里面可以实现要求的数组对数量与每一个数字相等的数量有关
     // 3个1 2个2 3个3 组成的字符串无论怎么排列都是有3+1+3个满足要求的东西
     //所以又可以哈希表点出现次数，来确定一个串里面到底有几个，同时设计可以同时扫数组同时出答案，实际上每次碰到i等于每次加上等于hash[i]的值，
     // 解释一下就是扫到了第4个1，前面三个1都多了一个，所以+3（对这个hash里面是个数，使用先加厚更新个数的方案正好能完美解决）
-    // 双指针：解决的问题是有几组这样的数组
-    long long pow1(long long x, long long n) {
-        long long res = 1;
-        while (n) {
-            if (n & 1) {
-                res = res * x % MOD;
+    // 双指针：解决的问题是有几组这样的数组，我们上面一顿操作就找到了一个解，这时候我们以右边为标准，搜寻所有到右边这个x能符合要求的左边。
+    // 这里是因为如果i+1是合理的，那i肯定也是合理的，所以不需要复位。
+
+    // 1. map在访问不存在的值时候回生成一个默认值组成一个键值对
+    class Solution {
+        public:
+            long long countGood(vector<int>& nums, int k) {
+                unordered_map<int, int> cnt; //hash表
+                long long ans = 0;
+                long long cur = 0;
+                int i = 0;  //设置左锚点
+                for (int& x : nums) {
+                    //完成右锚点计算
+                    cur +=cnt[x];
+                    cnt[x]++;
+                    //搜左边最右
+                    // cnt[nums[i]]+1代表 举例：4个1包括3+2+1=6，cnt[1]=4（从0开始计数导致的）,-1之后才是正确的扣3
+                    // 
+                    while (cur - cnt[nums[i]] + 1 >= k) {
+                        cnt[nums[i]]--;
+                        cur -= cnt[nums[i++]];
+                    }
+                    //>= 即正好减到满组要求，那这个左就是最后一个满足要求的左了，然后因为从0开始编号，所以是i+1号
+                    if (cur >= k) {
+                        ans += i + 1;
+                    }
+                }
+                return ans;
             }
-            x = x * x % MOD;
-            n >>= 1;
-        }
-        return res;
-    }
-    public:
-        int countGoodNumbers(long long n) {
-            long long x = (n+1)/2;
-            long long y = n/2;
-            int ans = pow1(4,y)*pow1(5,x)% MOD;
-            return ans;
-            
-        }
-    };
+        };
