@@ -18,6 +18,7 @@ class Solution {
     public:
         int countGoodNumbers(long long n) {
             long long x = (n+1)/2;
+            long long y = n/2;
             int ans = pow1(4,y)*pow1(5,x)% MOD;
             return ans;
             
